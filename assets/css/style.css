@@ -36,3 +36,29 @@ body{
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.fa-pen-to-square ,.fa-trash-can{
+    cursor: pointer;
+    transition: .3s;
+}
+.fa-pen-to-square:hover ,.fa-trash-can:hover{
+    transform: scale(1.4);
+}
+
+.bg{
+    animation: updatedCard 0.8s ease-in-out;
+}
+
+@keyframes updatedCard{
+    0%{
+        transform: scale(1);
+    }
+
+    50%{
+        transform: scale(1.08);
+        
+    }
+
+    100%{
+        transform: scale(1);
+    }
+}

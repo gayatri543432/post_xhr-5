@@ -20,25 +20,34 @@ function snackBar(msg,i){
     timer:3000
   }) 
 }
+
+function tooltips(){
+ 
+  $('[data-toggle="tooltip"]').tooltip()
+
+}
 function templating(arr){
     let res=''
     arr.forEach(p=>{
         res+=` <div class="col-md-3 mt-5" id="${p.id}">
                 <div class="card h-100">
-                    <div class="card-header">
+                    <div class="card-header" data-toggle="tooltip" data-placement="top" title="${p.title}">
                         <h3>${p.title}</h3>
                     </div>
                     <div class="card-body">
                         <p>${p.body}</p>
                     </div>
                     <div class="card-footer d-flex justify-content-between">
-                        <i onclick="onEdit(this)" class="fa-solid fa-pen-to-square fa-2x text-primary"></i>
-                        <i onclick="onRemove(this)"  class="fa-solid fa-trash-can fa-2x text-danger"></i>
+                        <i onclick="onEdit(this)" class="fa-solid fa-pen-to-square fa-2x text-primary"
+                        data-toggle="tooltip" data-placement="top" title="Edit Post"></i>
+                        <i onclick="onRemove(this)"  class="fa-solid fa-trash-can fa-2x text-danger"
+                        ata-toggle="tooltip" data-placement="top" title="Delete Post"></i>
                     </div>
                 </div>
             </div>`
     })
     postContainer.innerHTML=res
+    tooltips()
 }
 function fetchPosts(){
     spinner.classList.remove('d-none')
@@ -72,6 +81,7 @@ function createPosts(ele){
     }
     let xhr=new XMLHttpRequest()
     xhr.open('POST',BASE_URL)
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send(JSON.stringify(new_post))
     xhr.onload=function(){
         if(xhr.status>=200 && xhr.status<=299){
@@ -80,21 +90,24 @@ function createPosts(ele){
             col.className=`col-md-3 mt-5`
             col.id=res.id
             col.innerHTML=`  <div class="card h-100">
-                    <div class="card-header">
+                    <div class="card-header" data-toggle="tooltip" data-placement="top" title="${new_post.title}">
                         <h3>${new_post.title}</h3>
                     </div>
                     <div class="card-body">
                         <p>${new_post.body}</p>
                     </div>
                     <div class="card-footer d-flex justify-content-between">
-                        <i onclick="onEdit(this)" class="fa-solid fa-pen-to-square fa-2x text-primary"></i>
-                        <i onclick="onRemove(this)"  class="fa-solid fa-trash-can fa-2x text-danger"></i>
+                        <i onclick="onEdit(this)" class="fa-solid fa-pen-to-square fa-2x text-primary"
+                        data-toggle="tooltip" data-placement="top" title="Edit Post"></i>
+                        <i onclick="onRemove(this)"  class="fa-solid fa-trash-can fa-2x text-danger"
+                        data-toggle="tooltip" data-placement="top" title="Delete Post"></i>
                     </div>
                 </div>`
                 postContainer.prepend(col)
                 formContainer.reset()
                 spinner.classList.add('d-none')
-                snackBar('New Post Created Successfully','success')
+                tooltips()
+                snackBar(`New Post with Id ${res.id} Created Successfully`,'success')
         }else{
                 spinner.classList.add('d-none')
                 snackBar('Something went wrong..','error')
@@ -126,7 +139,7 @@ function onRemove(ele){
         if(xhr.status>=200 && xhr.status<=299){
             document.getElementById(REMOVE_ID).remove()
             spinner.classList.add('d-none')
-            snackBar("New Post ${REMOVE_ID} deleted Successfully",'success')
+            snackBar(`New Post ${REMOVE_ID} deleted Successfully`,'success')
 
         }else{
             spinner.classList.add('d-none')
@@ -151,6 +164,13 @@ function onEdit(ele){
             let res=JSON.parse(xhr.response)
             titleControl.value=res.title;
             bodyControl.value=res.body;
+            userIdControl.value = res.userId;
+
+            formContainer.scrollIntoView({
+                behavior:'smooth',
+                block:'center'
+                
+            })
               spinner.classList.add('d-none')
             addBtn.classList.add('d-none')
             updateBtn.classList.remove('d-none')
@@ -173,6 +193,7 @@ function onUpdatePost(){
     }
     let xhr=new XMLHttpRequest()
     xhr.open('PATCH',UPDATE_URL)
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send(JSON.stringify(Update_post))
     xhr.onload=function(){
         if(xhr.status>=200 && xhr.status<=299){
@@ -180,11 +201,31 @@ function onUpdatePost(){
             let col=document.getElementById(UPDATE_ID)
             col.querySelector('h3').innerHTML=Update_post.title
             col.querySelector('p').innerHTML=Update_post.body
+            
+            let header = col.querySelector('.card-header');
+
+            header.setAttribute('title', Update_post.title);
+
+            $(header).tooltip('dispose');
+            $(header).tooltip();
+
+            let updatePost=document.getElementById(UPDATE_ID)
+            updatePost.classList.add('bg')
+            updatePost.scrollIntoView({
+                behavior:'smooth',
+                block:'center'
+            })
+
+            setTimeout(() => {
+                updatePost.classList.remove('bg')
+            }, 8000);
             formContainer.reset()
             spinner.classList.add('d-none')
             addBtn.classList.remove('d-none')
             updateBtn.classList.add('d-none')
-            snackBar('The Post Updated succeessfully..','success')
+
+
+            snackBar(`'The Post with Id ${UPDATE_ID} Updated succeessfully..`,'success')
         }else{
             spinner.classList.add('d-none')
             snackBar('Something went wrong..','error')
