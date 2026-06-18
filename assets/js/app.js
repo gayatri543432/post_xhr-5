@@ -17,7 +17,7 @@ function snackBar(msg,i){
   Swal.fire({
     title:msg,
     icon:i,
-    timer:3000
+    timer:2000
   }) 
 }
 
@@ -218,7 +218,7 @@ function onUpdatePost(){
 
             setTimeout(() => {
                 updatePost.classList.remove('bg')
-            }, 8000);
+            }, 3000);
             formContainer.reset()
             spinner.classList.add('d-none')
             addBtn.classList.remove('d-none')
